@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Socket.IO chat</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="/assets/css/style.css">
+	<link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+	
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+</head>
+<body>
+<ul id="messages"></ul>
+<form action="">
+	<input type="text" id="name" placeholder="Введите Ваше имя" required>
+	<input id="m" autocomplete="off" placeholder="Ваше сообщение" /><button>Отправить</button>
+</form>
+	
+	<script>
+	$(function () {
+		var socket = io();
+		var min 		 = 1;
+		var max 		 = 6;
+		var randomNumber = Math.floor(Math.random() * (max - min)) + min;
+		
+		var colorClass;
+		switch (randomNumber) {
+			case 1:
+				colorClass = 'secondary';
+				break;
+			case 2:
+				colorClass = 'danger';
+				break;
+			case 3:
+				colorClass = 'success';
+				break;
+			case 4:
+				colorClass = 'warning';
+				break;
+			case 5:
+				colorClass = 'info';
+				break;
+			case 6:
+				colorClass = 'light';
+				break;
+		}
+
+
+
+		$('form').submit(function(e){
+			e.preventDefault(); // prevents page reloading
+			
+			if ( $('#m').val() !== '') 
+				socket.emit('send message', {name: $('#name').val(), message: $('#m').val(), color: colorClass});
+
+			
+			$('#m').val('');
+		});
+		socket.on('receive message', function(data){
+			$('#messages').append($('<li>').html('<b class="text-'+data.color+'">'+data.name+':</b>' + '<span>' + data.message + '</span>'));
+		});
+	});
+	</script>
+	</body>
+</html>
+	
